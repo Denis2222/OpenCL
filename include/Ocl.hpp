@@ -4,6 +4,9 @@
 #include <OpenCL/opencl.h>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <stdlib.h>
 
 class Ocl {
 
@@ -12,6 +15,13 @@ class Ocl {
 
 	cl_context			context;
 	cl_command_queue	commands;
+
+	std::string			program_string;
+	cl_program			program;
+
+	cl_kernel			kernel;
+	cl_mem				inputBuffer;
+	cl_mem				outputBuffer;
 
 	public:
 		Ocl(void);
@@ -22,6 +32,17 @@ class Ocl {
 
 		void GetContext(void);
 		void GetCommandQueue(void);
+
+		void LoadProgram(std::string);
+		void CreateProgram(void);
+		void BuildProgram(void);
+
+		void CreateKernel(const char *function);
+
+		void InitKernel(void);
+
+		void ExecKernel(void);
+		void ResultKernel(void);
 };
 
 #endif
