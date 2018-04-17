@@ -1,9 +1,9 @@
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
-	GCC_FLAG = -Werror -Wextra -Wall
+	GCC_FLAG = -Wextra -Wall
 	DL_INC = -I./include
 	DL_FLAG_DIR =
-	DL_FLAG = -lGLU -lGL -lglfw -lGLEW -lGLU -lGL -ldl -lm -lpthread -lXxf86vm -lX11 -lassimp -lnoise
+	DL_FLAG = -lGLU -lGL -lglfw -lGLEW -lGLU -lGL -ldl -lm -lpthread -lXxf86vm -lX11 -lassimp -lnoise -lOpenCL
 endif
 ifeq ($(UNAME), Darwin)
 	GCC_FLAG = -Werror -Wextra -Wall

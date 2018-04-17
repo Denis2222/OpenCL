@@ -108,7 +108,7 @@ void Ocl::BuildProgram(void) {
 		}
 		clGetProgramBuildInfo(this->program, this->device, CL_PROGRAM_BUILD_LOG, sizeof(buf), buf, &len);
 		std::cout << "Build Program cl failed" << std::endl;;
-		write(STDOUT_FILENO, buf, len);
+		printf(" %s \n", buf);
 		exit(0);
 	}
 	std::cout << "Build Program OK" << std::endl;
@@ -126,10 +126,11 @@ void Ocl::CreateKernel(const char *function) {
 	std::cout << "Kernel Create OK" << std::endl;
 }
 
-#define NB 50
+#define NB 1025
+static const int NBPOINT = NB;
 
 void Ocl::InitKernel(void) {
-	size_t numberOfValues = NB;
+	int numberOfValues = NBPOINT;
 	size_t sizeOfBuffers = NB*sizeof(int);
 	int* inputIntegers = (int*)malloc(sizeOfBuffers);  //Our input data array
 	for(size_t i=0 ; i < NB ; i++)            //We put some numbers in it
@@ -171,11 +172,21 @@ void Ocl::InitKernel(void) {
 
 	result = 0;
 	result |= clSetKernelArg(this->kernel, 0, sizeof(cl_mem), &this->inputBuffer);
-	result |= clSetKernelArg(this->kernel, 1, sizeof(cl_mem), &this->outputBuffer);
-	result |= clSetKernelArg(this->kernel, 2, sizeof(size_t), &numberOfValues);
 	if(result != CL_SUCCESS)
 	{
-		std::cout << "Error while setting kernel arguments" << std::endl;
+		std::cout << "Error while setting kernel arguments 0 " << result << std::endl;
+		exit(1);
+	}
+	result |= clSetKernelArg(this->kernel, 1, sizeof(cl_mem), &this->outputBuffer);
+	if(result != CL_SUCCESS)
+	{
+		std::cout << "Error while setting kernel arguments 1" << result << std::endl;
+		exit(1);
+	}
+	result |= clSetKernelArg(this->kernel, 2, sizeof(NBPOINT), &NBPOINT);
+	if(result != CL_SUCCESS)
+	{
+		std::cout << "Error while setting kernel arguments 2" << result << std::endl;
 		exit(1);
 	}
 
@@ -206,6 +217,9 @@ void Ocl::ExecKernel(void) {
 	int result;
 	result = clGetKernelWorkGroupInfo(this->kernel, this->device, CL_KERNEL_WORK_GROUP_SIZE,
 					sizeof(localWorkSize), &localWorkSize, NULL);
+
+	std::cout << "localWorkSize:" << localWorkSize << " " << std::endl;
+
 	if(localWorkSize > NB) localWorkSize = NB;
 	if(result != CL_SUCCESS)
 	{
@@ -218,7 +232,7 @@ void Ocl::ExecKernel(void) {
 					&localWorkSize, numEvents, eventsToWait, &kernelExecEvent);
 	if(result != CL_SUCCESS)
 	{
-		std::cout << "Error while executing the kernel" << std::endl;
+		std::cout << "Error while executing the kernel" << result << std::endl;
 		exit(1);
 	}
 }

@@ -1,7 +1,12 @@
 #ifndef OCL_HPP
 #define OCL_HPP
 
-#include <OpenCL/opencl.h>
+#ifdef __APPLE__
+# include <OpenCL/opencl.h>
+#else
+# include <CL/cl.h>
+#endif
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
